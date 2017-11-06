@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-statement namespace="maximo">
+	<!--
+		id=:id 这种类型不会被模板引擎所处理
+		
+		<#if !personid??>  personid 不为空
+		<#if personid?exists && personid!="">  personid 存在且不为空
+	     -->
+
+	
+	<sql id="listmaxattributecfgbyobjectname" parser="freemarker">
+		<![CDATA[
+			select * from MAXATTRIBUTECFG where PERSISTENT=1 and objectname='${objectname}' and entityname='${objectname}'
+		]]>
+	</sql>
+	
+		<sql id="listnextautokey.find" parser="freemarker">
+		<![CDATA[
+			select * from autokey where autokeyname='${autokeyname}' order by DECODE(nvl(siteid,1),'1',1,2)
+		]]>
+	</sql>
+	
+	<sql id="listnextautokey.update" parser="freemarker">
+		<![CDATA[
+			update autokey set  seed=${seed?c} where autokeyid=${autokeyid?c} and rowstamp='${rowstamp?c}'
+		]]>
+	</sql>
+
+	<sql id="sequence.nextval" parser="freemarker">
+		<![CDATA[
+			select ${sequencename}.nextval value from dual
+		]]>
+	</sql>
+	
+	<sql id="getsysdate" parser="freemarker">
+		<![CDATA[
+			select sysdate as value from dual
+		]]>
+	</sql>
+	
+	
+	<sql id="getorgid" parser="freemarker">
+		<![CDATA[
+			select * from site where siteid='${siteid}'
+		]]>
+	</sql>
+	
+	<sql id="list_nextautodatesitenum_find" parser="freemarker">
+		<![CDATA[
+			select * from autodatesitenum where  SITEID='${siteid}'  and ORGID='${orgid}' 
+			and OWNERTABLE='${ownertable}' and OWNERATTRIBUTENAME='${ownerattributename}' 
+			and YEAR=${year?c} and MONTH=${month}
+		]]>
+	</sql>
+	
+	<sql id="getsitewotnum" parser="freemarker">
+		<![CDATA[
+			select * from site where  SITEID='${siteid}' 
+		]]>
+	</sql>
+	
+	<sql id="list_nextautodatesitenum_update" parser="freemarker">
+		<![CDATA[
+			update autodatesitenum set  num=${num?c} where autodatesitenumid=${autodatesitenumid?c} and rowstamp='${rowstamp?c}'
+		]]>
+	</sql>
+	
+</sql-statement>

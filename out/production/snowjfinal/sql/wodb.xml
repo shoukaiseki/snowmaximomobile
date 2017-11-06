@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-statement namespace="wodb">
+	<!--
+		id=:id 这种类型不会被模板引擎所处理
+		
+		<#if !personid??>  personid 不为空
+		<#if personid?exists && personid!="">  personid 存在且不为空
+	     -->
+
+</sql-statement>

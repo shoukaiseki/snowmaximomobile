@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-statement namespace="login"> 
+<!-- 动态SQL处理 -->
+<sql id="verifypassword" parser="freemarker">
+  <![CDATA[ 
+        select t.*,password||'' password2,p.displayname
+	from maxuser t ,person p where t.personid = p.personid and upper(loginid) =upper('${loginid}') 
+     ]]>
+</sql>
+
+
+
+
+
+
+
+
+
+
+
+
+<sql id="info">
+  <![CDATA[ 
+       select p.personid,p.displayname,m.*,'' password,(select t.phonenum from phone t where t.personid = p.personid and t.isprimary = 1) phone
+        from person p,maxuser m where m.personid=p.personid and m.loginid=?
+     ]]>
+</sql>
+<sql id="verifynfccode">
+  <![CDATA[ 
+       select p.personid,p.displayname,m.*,'' password,(select t.phonenum from phone t where t.personid = p.personid and t.isprimary = 1) phone
+        from person p,maxuser m where m.personid=p.personid and m.nfccode=?
+     ]]>
+</sql>
+<!-- SERVERHOST, SERVERNAME, USERID, DISPLAYNAME, CLIENTHOST,CLIENTADDR,imecode -->
+<sql id="insertsession">
+  <![CDATA[ 
+       insert into maxsession (MAXSESSIONUID,  LOGINDATETIME, ISSYSTEM
+       , APPLICATION, RELOADCACHE, SERVERTIMESTAMP, ACTIVE, LASTACTIVITY, ADMINLOGOUT, ismobile,#attribute#)
+	   values (maxsessionseq.nextval,  sysdate, 0, null, null, sysdate, 1, sysdate, 0, 1,#value#)
+     ]]>
+</sql>
+<sql id="deletesession">
+  <![CDATA[ 
+       delete from maxsession where ismobile = 1 and userid = ?
+     ]]>
+</sql>
+<sql id="listsession">
+  <![CDATA[ 
+       select * from maxsession where ismobile = 1
+     ]]>
+</sql>
+<sql id="savePerson">
+  <![CDATA[ 
+       update maxuser set nfccode = ? where personid =  ? 
+     ]]>
+</sql>
+</sql-statement>

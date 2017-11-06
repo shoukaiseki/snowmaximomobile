@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-statement namespace="workflow"> 
+<!-- 动态SQL处理 -->
+<sql id="listapprovalhistory" parser="freemarker">
+  <![CDATA[ 
+   	 	select WFTRANSACTION.*,WFNODE.TITLE WFNODE_TITLE,GET_PERSON_DISPLAYNAME(personid) person_displayname  from WFTRANSACTION
+		  left join WFNODE on(WFTRANSACTION.processname=WFNODE.processname and WFTRANSACTION.nodeid=WFNODE.nodeid and WFTRANSACTION.processrev = WFNODE.processrev)
+		  where transtype in( 'WF 操作' , '分配完成的 WF') and ownertable = '${ownertable}' and ownerid = ${ownerid}
+	]]>
+</sql>	
+
+<sql id="listassignwf" parser="freemarker">
+  <![CDATA[ 
+		    select WFASSIGNMENT.*,GET_PERSON_DISPLAYNAME(ASSIGNCODE) assigncode_displayname from WFASSIGNMENT
+      where  ownertable = '${ownertable}' and wfassignment.ownerid = ${ownerid} and assignstatus in
+      (select value from synonymdomain where domainid='WFASGNSTATUS' and maxvalue='ACTIVE')
+	]]>
+</sql>	
+
+
+
+
+</sql-statement>

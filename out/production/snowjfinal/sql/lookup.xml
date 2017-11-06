@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-statement namespace="lookup">
+	<!--
+		id=:id 这种类型不会被模板引擎所处理
+	     -->
+	<sql id="listlocation" parser="freemarker">
+		<![CDATA[
+		select * from (select * from LOCATIONS where siteid='${siteid}' and to_number(rowstamp)>${rowstamp}   order by to_number(rowstamp)) where rownum <= 1000
+			]]>
+	</sql>
+	
+	<sql id="listasset" parser="freemarker">
+		<![CDATA[
+		select * from (select * from asset where siteid='${siteid}' and to_number(rowstamp)>${rowstamp}   order by to_number(rowstamp)) where rownum <= 1000
+			]]>
+	</sql>
+	
+	<sql id="listalndomain" parser="freemarker">
+	<![CDATA[
+		select * from (select * from alndomain 
+          where to_number(ROWSTAMP) > ${rowstamp} and description is not null order by to_number(ROWSTAMP)
+          ) where rownum <= 1000
+		]]>
+	</sql>
+		
+	<sql id="listperson" parser="freemarker">
+		<![CDATA[
+		select * from (select * from person where  to_number(rowstamp)>${rowstamp}   order by to_number(rowstamp)) where rownum <= 1000
+			]]>
+	</sql>
+	
+	<sql id="listfailurelist" parser="freemarker">
+		<![CDATA[
+			select * from (SELECT FAILURELIST.FAILURELIST,FAILURELIST.PARENT,FAILURELIST.FAILURECODE, FAILURELIST.TYPE, FAILURELIST.ORGID,FAILURECODE.DESCRIPTION
+				,FAILURECODE.FAILURECODEID, FAILURECODE.LANGCODE, failurelist.ROWSTAMP
+				from FAILURELIST left join FAILURECODE on (FAILURELIST.FAILURECODE=FAILURECODE.FAILURECODE)
+				where FAILURELIST.orgid=get_orgid_fromsiteid('${siteid}') and to_number(failurelist.rowstamp)>${rowstamp}   order by to_number(failurelist.rowstamp)) where rownum <= 1000
+			]]>
+	</sql>
+	
+	<sql id="listdepartment" parser="freemarker">
+	<![CDATA[
+		select * from (select * from da_department 
+          where  siteid = '${siteid}' and to_number(ROWSTAMP) > ${rowstamp}  order by to_number(ROWSTAMP)
+          ) where rownum <= 1000
+		]]>
+	</sql>
+	
+<!--
+union
+			select 'item' as objectname,max(to_number(rowstamp)) rowstamp,count(*) tiaoshu from item
+			-->
+	<sql id="checksync" parser="freemarker">
+		<![CDATA[
+			select 'locations' as objectname,max(to_number(lo.rowstamp)) rowstamp,count(*) tiaoshu from locations lo
+				where siteid =  '${siteid}'
+			union
+			select 'alndomain' as objectname,max(to_number(al.rowstamp)) rowstamp,count(*) tiaoshu from Alndomain al
+				where  description is not null
+			union
+			select 'asset' as objectname,max(to_number(at.rowstamp)) rowstamp,count(*) tiaoshu from asset at
+				where siteid = '${siteid}' 
+			union
+			select 'person' as objectname,max(to_number(rowstamp)) rowstamp,count(*) tiaoshu from person
+				
+			union
+			select 'failurelist' as objectname,max(to_number(rowstamp)) rowstamp,count(*) tiaoshu from failurelist
+			union
+			select 'department' as objectname,max(to_number(rowstamp)) rowstamp,count(*) tiaoshu from da_department
+				where siteid = '${siteid}' 
+			
+		]]>
+	</sql>
+</sql-statement>

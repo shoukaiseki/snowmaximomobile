@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<presentation beanclass="com.wmc.webclient.mobileversion.MobileVersionAppBean" id="mobilevers" ismobile="false" mboname="MOBILEVERSION" resultstableid="results_showlist" version="6.0.0" viewport="1041x600">
+	<page id="mainrec" scroll="false">
+		<include controltoclone="pageHeader" id="INCLUDE-pageHeader"/>
+		<clientarea id="clientarea">
+			<tabgroup id="maintabs" style="form">
+				<tab default="true" id="results" label="列表" type="list">
+					<menubar event="search" id="actiontoolbar1" sourcemethod="getAppSearchOptions"/>
+					<table id="results_showlist" inputmode="readonly" label="列表" mboname="MOBILEVERSION" selectmode="multiple">
+						<tablebody displayrowsperpage="20" filterable="true" filterexpanded="true" id="results_showlist_tablebody">
+							<tablecol dataattribute="MOBILEVERSIONID" filterable="false" id="results_showlist_column_select" mxevent="toggleselectrow" mxevent_desc="Select Row {0}" sortable="false" type="event"/>
+							<tablecol dataattribute="MOBILEVERSIONID" id="results_showlist_column_link" label="唯一ID" mxevent="selectrecord" mxevent_desc="Go To %1" type="link" usefieldsizegroup="false"/>
+							<tablecol dataattribute="DESCRIPTION" id="results_showlist_column2" mxevent="selectrecord" mxevent_desc="Go To %1" type="link"/>
+							<tablecol dataattribute="SYSTEMTYPE" id="1501826795650" lookup="valuelist"/>
+							<tablecol dataattribute="VERSIONNUM" id="1494985278708" mxevent="selectrecord" mxevent_desc="Go To %1" type="link"/>
+							<tablecol dataattribute="VERSION" id="1494985277067" mxevent="selectrecord" mxevent_desc="Go To %1" type="link"/>
+							<tablecol dataattribute="VERSION1" id="1494985275333" mxevent="selectrecord" mxevent_desc="Go To %1" type="link"/>
+							<tablecol dataattribute="VERSION2" id="1494985268433" mxevent="selectrecord" mxevent_desc="Go To %1" type="link"/>
+							<tablecol dataattribute="VERSION3" id="1494985315382" label="优化更新版本号" mxevent="selectrecord" mxevent_desc="Go To %1" type="link"/>
+							<tablecol dataattribute="Enabled" id="1495000873245"/>
+							<tablecol filterable="false" id="results_bookmark" mxevent="BOOKMARK" mxevent_desc="Add to Bookmarks" mxevent_icon="btn_addtobookmarks.gif" sortable="false" type="event"/>
+						</tablebody>
+					</table>
+				</tab>
+				<tab id="main" label="详细信息" type="insert">
+					<section id="maintab_section">
+						<sectionrow id="section_xml_row_1">
+							<sectioncol id="section_xml_col_1">
+								<textbox dataattribute="MOBILEVERSIONID" id="maintab_attr1" inputmode="readonly" label="唯一ID"/>
+								<textbox dataattribute="DESCRIPTION" id="maintab_attr2" lookup="longdesc"/>
+								<textbox dataattribute="VERSIONNUM" id="maintab_attr4" inputmode="readonly"/>
+								<textbox dataattribute="VERSION" id="maintab_attr6" inputmode="required"/>
+								<textbox dataattribute="VERSION1" id="maintab_attr7" inputmode="required"/>
+								<textbox dataattribute="VERSION2" id="maintab_attr8" inputmode="required"/>
+								<textbox dataattribute="VERSION3" id="maintab_attr9" inputmode="required"/>
+								<buttongroup align="left" id="1496369043121" label="按钮组..." labelalign="left">
+									<pushbutton id="1496369043137" label="生成URL" mxevent="SETURL"/>
+								</buttongroup>
+								<textbox dataattribute="url" id="1495675385459" inputmode="required"/>
+								<multilinetextbox dataattribute="UPDATEDLOG" id="1494985037491" inputmode="required" rows="3"/>
+							</sectioncol>
+							<sectioncol id="1494985004860">
+								<section id="1496283543784">
+									<sectionrow id="1496283551112">
+										<sectioncol id="1496283551128">
+											<checkbox dataattribute="Enabled" id="1495000712300" label="启用该版本"/>
+											<textbox dataattribute="SYSTEMTYPE" id="maintab_attr12" lookup="valuelist"/>
+											<textbox dataattribute="CREATEDATE" id="maintab_attr11" lookup="datelookup"/>
+										</sectioncol>
+									</sectionrow>
+									<sectionrow id="1496283563784">
+										<sectioncol id="14962835637842">
+											<section id="1496283586634">
+												<attachments id="1496283591415"/>
+											</section>
+										</sectioncol>
+									</sectionrow>
+								</section>
+							</sectioncol>
+						</sectionrow>
+					</section>
+				</tab>
+			</tabgroup>
+		</clientarea>
+		<include controltoclone="pageFooter" id="INCLUDE-pageFooter"/>
+	</page>
+
+	<dialog beanclass="psdi.webclient.system.beans.QbeBean" id="searchmore" inputmode="query" label="高级搜索">
+		<section id="searchmore_1">
+			<textbox dataattribute="MOBILEVERSIONID" id="searchmore_attr1"/>
+			<textbox dataattribute="DESCRIPTION" id="searchmore_attr2"/>
+			<checkbox dataattribute="HASLD" id="searchmore_attr3"/>
+			<textbox dataattribute="VERSIONNUM" id="searchmore_attr4"/>
+			<textbox dataattribute="UPDATEDLOG" id="searchmore_attr5"/>
+			<textbox dataattribute="VERSION" id="searchmore_attr6"/>
+			<textbox dataattribute="VERSION1" id="searchmore_attr7"/>
+			<textbox dataattribute="VERSION2" id="searchmore_attr8"/>
+			<textbox dataattribute="VERSION3" id="searchmore_attr9"/>
+			<textbox dataattribute="DESCRIPTION_LONGDESCRIPTION" id="searchmore_attr10"/>
+			<textbox dataattribute="CREATEDATE" id="searchmore_attr11" lookup="datelookup"/>
+			<textbox dataattribute="SYSTEMTYPE" id="searchmore_attr12"/>
+		</section>
+		<buttongroup id="searchmore_buttongroup">
+			<pushbutton default="true" id="searchmore_buttongroup_1" label="查找" mxevent="dialogok"/>
+			<pushbutton id="qbe_restoreappdefault_button" label="恢复应用程序缺省值" mxevent="qbeclear"/>
+			<pushbutton id="qbe_revisebutton" label="修订" menutype="SEARCHMOREREVISE" targetid="searchmore"/>
+			<pushbutton id="searchmore_buttongroup_3" label="取消" mxevent="qbecancel"/>
+		</buttongroup>
+	</dialog>
+
+	<dialog beanclass="psdi.webclient.system.beans.ViewBookmarksBean" id="searchbook" label="我的书签" mboname="MOBILEVERSION">
+		<table id="bookmarks_table" inputmode="readonly" selectmode="single">
+			<tablebody displayrowsperpage="20" filterable="true" id="bookmarks_table_tablebody">
+				<tablecol dataattribute="MOBILEVERSIONID" id="bookmarks_tablecolumn_1" mxevent="selectrecord" type="link"/>
+				<tablecol dataattribute="description" id="bookmarks_tablecolumn_2"/>
+				<tablecol filterable="false" id="bookmarks_tablecolumn_3" mxevent="instantdelete" mxevent_desc="Delete" mxevent_icon="btn_delete.gif" sortable="false" type="event"/>
+			</tablebody>
+		</table>
+		<buttongroup id="bookmarks_2">
+			<pushbutton default="true" id="bookmarks_2_1" label="确定" mxevent="dialogok"/>
+		</buttongroup>
+	</dialog>
+	<configurationblock id="datastore_configurationblock">
+	</configurationblock>
+</presentation>

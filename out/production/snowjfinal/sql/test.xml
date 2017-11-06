@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-statement namespace="test">
+	<!--
+		id=:id 这种类型不会被模板引擎所处理
+	     -->
+	<sql id="list" parser="freemarker">
+		<![CDATA[
+		select * from test  where id=${id}  and a=${a!}
+			]]>
+	</sql>
+
+	<sql id="list1" parser="beetl">
+		<![CDATA[
+		select * from test  where id=${id}  and a=${a}
+			]]>
+	</sql>
+</sql-statement>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-statement namespace="checkversion"> 
+<!-- 动态SQL处理 -->
+<sql id="getmaxversion" parser="freemarker">
+  <![CDATA[ 
+	  select * from mobileversion where upper(SYSTEMTYPE)=upper('${systemtype}') and ENABLED=1 order by VERSIONNUM desc
+     ]]>
+</sql>
+
+<sql id="getmaxversion_android">
+  <![CDATA[ 
+		select * from mobileversion where upper(SYSTEMTYPE)=upper('android') and ENABLED=1 order by VERSIONNUM desc
+     ]]>
+</sql>
+
+<sql id="getmaxversion_ios">
+  <![CDATA[ 
+		select * from mobileversion where upper(SYSTEMTYPE)=upper('ios') and ENABLED=1 order by VERSIONNUM desc
+     ]]>
+</sql>
+
+
+</sql-statement>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-statement namespace="common">
+	<!--
+		id=:id 这种类型不会被模板引擎所处理
+		
+		<#if !personid??>  personid 不为空
+		<#if personid?exists && personid!="">  personid 存在且不为空
+	     -->
+
+	
+	<sql id="listdocfile" parser="freemarker">
+		<![CDATA[
+			select i.docinfoid,i.document ,i.description ,i.urlname,d.CREATEDATE, d.CREATEBY  from doclinks d,docinfo i 
+				where d.docinfoid = i.docinfoid and d.ownertable = '${ownertable}' and d.ownerid = ${ownerid}
+				order by i.docinfoid
+		]]>
+	</sql>
+	
+	<sql id="workflow_has_task_assignment" parser="freemarker">
+		<![CDATA[
+			select * from WFINSTANCE where ownerid=${ownerid} and ownertable='${ownertable}'  and active = 1 and 
+			   exists (select 1 from WFASSIGNMENT where ownerid=${ownerid} and ownertable='${ownertable}' 
+			   and assignstatus='活动' and assigncode='${personid}' )
+		]]>
+	</sql>
+	
+
+	
+</sql-statement>

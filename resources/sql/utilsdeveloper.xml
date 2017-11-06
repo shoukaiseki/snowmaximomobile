@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-statement namespace="utilsdeveloper">
+	<!--
+		id=:id 这种类型不会被模板引擎所处理
+	     -->
+	<sql id="viewmodelsrc_listmaxattributecfg" parser="freemarker">
+		<![CDATA[
+				select TITLE TITLE, 
+  'private '||(case MAXTYPE
+        when 'ALN' then 'String'
+        when 'UPPER' then 'String'
+        when 'GL' then 'String'
+        when 'INTEGER' then 'Integer'
+        when 'YORN' then 'Boolean'
+        when 'DECIMAL' then 'Double'
+        when 'DATETIME' then 'Date'
+        when 'DATE' then 'Date'
+        when 'TIME' then 'Date'
+        when 'BIGINT' then 'Long'
+        when 'AMOUNT' then 'Double'
+        when 'DURATION' then 'Double'
+        when 'FLOAT' then 'Double'
+		when 'SMALLINT' then 'Integer'
+        else  MAXTYPE
+        end
+        ) type
+, LOWER(ATTRIBUTENAME)||';' LOWERATTRIBUTENAME
+,'obj.set'||INITCAP( SUBSTR(ATTRIBUTENAME,1,1)) || LOWER(SUBSTR(ATTRIBUTENAME,2,LENGTH(ATTRIBUTENAME))) 
+||'('||(case MAXTYPE
+        when 'ALN' then 're.getStr("'||ATTRIBUTENAME||'")'
+        when 'UPPER' then 're.getStr("'||ATTRIBUTENAME||'")'
+        when 'GL' then 're.getStr("'||ATTRIBUTENAME||'")'
+        when 'INTEGER' then 're.getInt("'||ATTRIBUTENAME||'")'
+        when 'YORN' then 'getBoolean(re.getBigDecimal("'||ATTRIBUTENAME||'"))'
+        when 'DECIMAL' then 'getDouble(re.getBigDecimal("'||ATTRIBUTENAME||'"))'
+        when 'DATETIME' then 're.getDate("'||ATTRIBUTENAME||'")'
+        when 'DATE' then 're.getDate("'||ATTRIBUTENAME||'")'
+        when 'TIME' then 're.getDate("'||ATTRIBUTENAME||'")'
+        when 'BIGINT' then 're.getBigDecimal("'||ATTRIBUTENAME||'").longValue()'
+        when 'AMOUNT' then 'getDouble(re.getBigDecimal("'||ATTRIBUTENAME||'"))'
+        when 'DURATION' then 'getDouble(re.getBigDecimal("'||ATTRIBUTENAME||'"))'
+        when 'FLOAT' then 'getDouble(re.getBigDecimal("'||ATTRIBUTENAME||'"))'
+        when 'SMALLINT' then 're.getInt("'||ATTRIBUTENAME||'")'
+        else  MAXTYPE
+        end
+        )||');'
+setobj
+,ATTRIBUTENAME
+,'@DatabaseField(columnName="'||LOWER(ATTRIBUTENAME)||'")' DatabaseFieldATTRIBUTENAME
+,(case MAXTYPE
+        when 'ALN' then '@property (nonatomic,copy) NSString *'
+        when 'UPPER' then '@property (nonatomic,copy) NSString *'
+        when 'GL' then '@property (nonatomic,copy) NSString *'
+        when 'INTEGER' then '@property (nonatomic,strong) NSNumber *'
+        when 'YORN' then '@property (nonatomic, assign, getter=aos) BOOL'
+        when 'DECIMAL' then '@property (nonatomic,strong) NSNumber *'
+        when 'DATETIME' then '@property (nonatomic,strong) NSNumber *'
+        when 'DATE' then '@property (nonatomic,strong) NSNumber *'
+        when 'TIME' then '@property (nonatomic,strong) NSNumber *'
+        when 'BIGINT' then '@property (nonatomic,strong) NSNumber *'
+        when 'AMOUNT' then '@property (nonatomic,strong) NSNumber *'
+        when 'DURATION' then '@property (nonatomic,strong) NSNumber *'
+        when 'FLOAT' then '@property (nonatomic,strong) NSNumber *'
+        when 'SMALLINT' then '@property (nonatomic,strong) NSNumber *'
+        else  MAXTYPE
+        end
+        ) octype
+from maxattributecfg
+where objectname='${tablename}' and 
+PERSISTENT=1 order by ATTRIBUTENAME
+			]]>
+	</sql>
+
+	<sql id="viewmodelsrc_listmaxsequence_and_maxobject" parser="freemarker">
+		<![CDATA[ 
+		select MAXSEQUENCE.TBNAME,MAXSEQUENCE.NAME, MAXSEQUENCE.SEQUENCENAME
+      ,MAXOBJECT.OBJECTNAME,MAXOBJECT.ENTITYNAME
+      from MAXSEQUENCE,MAXOBJECT where   MAXOBJECT.OBJECTNAME='${tablename}' and MAXSEQUENCE.TBNAME=MAXOBJECT.OBJECTNAME
+			]]>
+	</sql>
+</sql-statement>

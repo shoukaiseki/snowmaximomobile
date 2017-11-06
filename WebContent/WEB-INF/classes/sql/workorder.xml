@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-statement namespace="workorder">
+	<!--
+		id=:id 这种类型不会被模板引擎所处理
+		
+		<#if !personid??>  personid 不为空
+		<#if personid?exists && personid!="">  personid 存在且不为空
+		
+		and  status not in ('取消','关闭','等待核准','退回修改','完成')
+			and (woclass in( '工单' ,'工作票','活动') and historyflag = 0 )
+	     -->
+	
+	<sql id="findallwotrack" parser="freemarker">
+		<![CDATA[
+		select * from workorder where (worktype in ('WO','OPPM','XJ') and istask=0 and status not in ( '关闭','取消'))
+			and siteid='${siteid}'
+			<#if findword?exists && findword!="">
+				and (upper(wonum) like upper('%${findword}%') or upper(DESCRIPTION)  like upper('%${findword}%') 
+				)
+			</#if>
+			order by workorderid desc
+		]]>
+	</sql>
+	
+	<sql id="findwotrackbywoid" parser="freemarker">
+		<![CDATA[
+		select 
+			 (select FAILURECODE from FAILUREREPORT where TYPE='问题' and FAILUREREPORT.wonum=workorder.wonum and 		FAILUREREPORT.siteid=workorder.siteid) failurereport_gzwt
+			,(select FAILURECODE from FAILUREREPORT where TYPE='原因' and FAILUREREPORT.wonum=workorder.wonum and FAILUREREPORT.siteid=workorder.siteid) failurereport_gzyy
+			,(select FAILURECODE from FAILUREREPORT where TYPE='补救措施' and FAILUREREPORT.wonum=workorder.wonum and FAILUREREPORT.siteid=workorder.siteid) failurereport_bjcs
+			,workorder.*
+			from workorder where  workorderid = ${workorderid!-1}
+		]]>
+	</sql>
+	
+	<!--SHOWTASKS 计划任务-->
+	<sql id="list_showtasks" parser="freemarker">
+		<![CDATA[
+			select * from workorder where  parent='${wonum}' and istask=1 and siteid='${siteid}'
+		]]>
+	</sql>
+	
+	
+	
+	<!--SHOWCHILDREN 子工单-->
+	<sql id="list_showchildren" parser="freemarker">
+		<![CDATA[
+			select * from WORKORDER where parent='${wonum}' and istask=0 and siteid='${siteid}'
+		]]>
+	</sql>
+	
+	<!--WOSLHAZPRECENABLED 危险点-->
+	<sql id="list_woslhazprecenabled" parser="freemarker">
+		<![CDATA[
+			
+			select WOSAFETYLINK.*
+				  ,wohazard.DESCRIPTION WOHAZARD_DESCRIPTION
+			  from WOSAFETYLINK,wohazard
+			  where WOSAFETYLINK.wonum = '${wonum}'
+					  and (WOSAFETYLINK.wonum = wohazard.wonum 
+					  and wohazard.hazardid = wosafetylink.hazardid 
+					  and wohazard.wosafetydatasource = wosafetylink.wosafetydatasource 
+					  and wohazard.precautionenabled = 1 
+					  and wohazard.siteid=wosafetylink.siteid )
+					  and WOSAFETYLINK.siteid='${siteid}'
+
+		]]>
+	</sql>
+	
+	<!--WOHAZARDPREC 危险点对应的预防措施
+	
+			select * from WOHAZARDPREC where wonum = '${wonum}' and hazardid = '${hazardid}' and   ( (wosafetydatasource = 'WP' and '${wosafetydatasource}' = 'WP') or (wosafetydatasource != 'WP' and '${wosafetydatasource}' != 'WP') ) and siteid='${siteid}'
+	-->
+	<sql id="list_wohazardprec_by_wosafetylink" parser="freemarker">
+		<![CDATA[
+		
+			select WOHAZARDPREC.* ,
+			  WOPRECAUTION.DESCRIPTION WOPRECAUTION_DESCRIPTION
+			from WOHAZARDPREC,WOPRECAUTION
+				where (WOHAZARDPREC.wonum = WOPRECAUTION.wonum and WOHAZARDPREC.precautionid=WOPRECAUTION.precautionid and WOHAZARDPREC.wosafetydatasource = WOPRECAUTION.wosafetydatasource and WOHAZARDPREC.siteid=WOPRECAUTION.siteid)
+				and WOHAZARDPREC.wonum = '${wonum}' and WOHAZARDPREC.hazardid = '${hazardid}' 
+				and   ( (WOHAZARDPREC.wosafetydatasource = 'WP' and '${wosafetydatasource}' = 'WP') 
+				  or (WOHAZARDPREC.wosafetydatasource != 'WP' and '${wosafetydatasource}' != 'WP') )
+				and WOHAZARDPREC.siteid='${siteid}'
+		]]>
+	</sql>
+	
+	<!--SHOWPLANLABOR 计划员工-->
+	<sql id="list_showplanlabor" parser="freemarker">
+		<![CDATA[
+			select * from WPLABOR where wonum in (select wonum from workorder where (wonum='${wonum}' or (parent='${wonum}' and istask = 1)) and siteid='${siteid}' )
+		]]>
+	</sql>
+	
+	
+	<!--计划物料-->
+	<sql id="list_showplanmaterial" parser="freemarker">
+		<![CDATA[
+			select * from WPITEM where wonum in (select wonum from workorder where (wonum='${wonum}' or (parent='${wonum}' and istask = 1)) and siteid='${siteid}' )
+		]]>
+	</sql>
+	
+	<!--SHOWACTUALLABOR 实际员工-->
+	<sql id="list_showactuallabor" parser="freemarker">
+		<![CDATA[
+			select * from LABTRANS where refwo in (select wonum from workorder where (wonum='${wonum}' or (parent='${wonum}' and istask = 1)) and siteid='${siteid}' )
+		]]>
+	</sql>
+	
+	<!--SHOWACTUALMATERIAL 实际物料-->
+	<sql id="list_showactualmaterial" parser="freemarker">
+		<![CDATA[
+			select * from MATUSETRANS where refwo in (select wonum from workorder where (wonum='${wonum}' or (parent='${wonum}' and istask = 1)) and siteid='${siteid}' )
+		]]>
+	</sql>
+	
+	
+
+</sql-statement>

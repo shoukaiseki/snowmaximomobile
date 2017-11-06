@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-statement namespace="wotodo"> 
+<!-- 动态SQL处理 -->
+<sql id="listcountbypersonid" parser="freemarker">
+  <![CDATA[ 
+   	 	select count(assignid) as value from wfassignment t where t.assignstatus = '活动' and t.assigncode = '${personid}'
+				 and t.app in ('DEFECT','GUZHANG','NWOTICKET','OPTICKET','SRQD','WOTRACK','XJ_TASK')
+	]]>
+</sql>	
+
+<sql id="queryworktodounsignbypersonid" parser="freemarker">
+  <![CDATA[ 
+   	 	 select * from (  
+				 select t.WFASSIGNMENTID,t.assignid,t.assigncode,t.description,t.app,t.processname,t.startdate,
+				 (select o.ownerid from wfinstance o where o.wfid = t.wfid and o.active = 1) ownerid,
+				 (select a.description from maxapps a where a.app = t.app) apptitle,assignstatus as status,
+				 (select p.displayname from person p where p.personid = assigncode ) personname 
+				 ,t.rowstamp
+				 from wfassignment t where  t.assigncode = '${personid}' 
+				 and t.app in ('DEFECT','GUZHANG','NWOTICKET','OPTICKET','SRQD','WOTRACK','XJ_TASK')
+				 and to_number(t.ROWSTAMP) > ${rowstamp}
+				 <#if queryall=="yes" >
+				<#else>
+					 and t.assignstatus = '活动'
+				</#if>
+				 order by to_number(t.ROWSTAMP) 
+		 ) where rownum <= 10
+		 
+	]]>
+</sql>	
+
+
+</sql-statement>
